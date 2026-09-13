@@ -1,0 +1,91 @@
+﻿2026-09-13T23:35:44.9926020Z ##[debug]Evaluating: secrets.PORTAL_USUARIO
+2026-09-13T23:35:44.9926494Z ##[debug]Evaluating Index:
+2026-09-13T23:35:44.9926807Z ##[debug]..Evaluating secrets:
+2026-09-13T23:35:44.9927167Z ##[debug]..=> Object
+2026-09-13T23:35:44.9927513Z ##[debug]..Evaluating String:
+2026-09-13T23:35:44.9927825Z ##[debug]..=> 'PORTAL_USUARIO'
+2026-09-13T23:35:44.9928474Z ##[debug]=> '***'
+2026-09-13T23:35:44.9928798Z ##[debug]Result: '***'
+2026-09-13T23:35:44.9929575Z ##[debug]Evaluating: secrets.PORTAL_SENHA
+2026-09-13T23:35:44.9929904Z ##[debug]Evaluating Index:
+2026-09-13T23:35:44.9930446Z ##[debug]..Evaluating secrets:
+2026-09-13T23:35:44.9930739Z ##[debug]..=> Object
+2026-09-13T23:35:44.9931000Z ##[debug]..Evaluating String:
+2026-09-13T23:35:44.9931300Z ##[debug]..=> 'PORTAL_SENHA'
+2026-09-13T23:35:44.9931621Z ##[debug]=> '***'
+2026-09-13T23:35:44.9931895Z ##[debug]Result: '***'
+2026-09-13T23:35:44.9932406Z ##[debug]Evaluating: secrets.SMTP_HOST
+2026-09-13T23:35:44.9933089Z ##[debug]Evaluating Index:
+2026-09-13T23:35:44.9933484Z ##[debug]..Evaluating secrets:
+2026-09-13T23:35:44.9933784Z ##[debug]..=> Object
+2026-09-13T23:35:44.9934065Z ##[debug]..Evaluating String:
+2026-09-13T23:35:44.9934367Z ##[debug]..=> 'SMTP_HOST'
+2026-09-13T23:35:44.9934710Z ##[debug]=> '***'
+2026-09-13T23:35:44.9935001Z ##[debug]Result: '***'
+2026-09-13T23:35:44.9935645Z ##[debug]Evaluating: secrets.SMTP_PORT
+2026-09-13T23:35:44.9935967Z ##[debug]Evaluating Index:
+2026-09-13T23:35:44.9936247Z ##[debug]..Evaluating secrets:
+2026-09-13T23:35:44.9936537Z ##[debug]..=> Object
+2026-09-13T23:35:44.9936860Z ##[debug]..Evaluating String:
+2026-09-13T23:35:44.9937143Z ##[debug]..=> 'SMTP_PORT'
+2026-09-13T23:35:44.9937436Z ##[debug]=> '***'
+2026-09-13T23:35:44.9937704Z ##[debug]Result: '***'
+2026-09-13T23:35:44.9938163Z ##[debug]Evaluating: secrets.SMTP_USER
+2026-09-13T23:35:44.9938480Z ##[debug]Evaluating Index:
+2026-09-13T23:35:44.9938758Z ##[debug]..Evaluating secrets:
+2026-09-13T23:35:44.9939040Z ##[debug]..=> Object
+2026-09-13T23:35:44.9939309Z ##[debug]..Evaluating String:
+2026-09-13T23:35:44.9939608Z ##[debug]..=> 'SMTP_USER'
+2026-09-13T23:35:44.9939943Z ##[debug]=> '***'
+2026-09-13T23:35:44.9940230Z ##[debug]Result: '***'
+2026-09-13T23:35:44.9940674Z ##[debug]Evaluating: secrets.SMTP_PASS
+2026-09-13T23:35:44.9940985Z ##[debug]Evaluating Index:
+2026-09-13T23:35:44.9941256Z ##[debug]..Evaluating secrets:
+2026-09-13T23:35:44.9941529Z ##[debug]..=> Object
+2026-09-13T23:35:44.9941796Z ##[debug]..Evaluating String:
+2026-09-13T23:35:44.9942073Z ##[debug]..=> 'SMTP_PASS'
+2026-09-13T23:35:44.9942368Z ##[debug]=> '***'
+2026-09-13T23:35:44.9943084Z ##[debug]Result: '***'
+2026-09-13T23:35:44.9943671Z ##[debug]Evaluating: secrets.DISCORD_WEBHOOK_URL
+2026-09-13T23:35:44.9944047Z ##[debug]Evaluating Index:
+2026-09-13T23:35:44.9944325Z ##[debug]..Evaluating secrets:
+2026-09-13T23:35:44.9944614Z ##[debug]..=> Object
+2026-09-13T23:35:44.9944876Z ##[debug]..Evaluating String:
+2026-09-13T23:35:44.9945164Z ##[debug]..=> 'DISCORD_WEBHOOK_URL'
+2026-09-13T23:35:44.9945880Z ##[debug]=> '***'
+2026-09-13T23:35:44.9946503Z ##[debug]Result: '***'
+2026-09-13T23:35:44.9950819Z ##[debug]Evaluating condition for step: 'Rodar verificação de notas'
+2026-09-13T23:35:44.9953288Z ##[debug]Evaluating: success()
+2026-09-13T23:35:44.9953719Z ##[debug]Evaluating success:
+2026-09-13T23:35:44.9954275Z ##[debug]=> true
+2026-09-13T23:35:44.9954722Z ##[debug]Result: true
+2026-09-13T23:35:44.9955420Z ##[debug]Starting: Rodar verificação de notas
+2026-09-13T23:35:44.9967931Z ##[debug]Loading inputs
+2026-09-13T23:35:44.9969222Z ##[debug]Loading env
+2026-09-13T23:35:44.9974360Z ##[group]Run python check_notas.py
+2026-09-13T23:35:44.9974697Z [36;1mpython check_notas.py[0m
+2026-09-13T23:35:45.0016843Z shell: /usr/bin/bash -e {0}
+2026-09-13T23:35:45.0017138Z env:
+2026-09-13T23:35:45.0017449Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.16/x64
+2026-09-13T23:35:45.0017918Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.16/x64/lib/pkgconfig
+2026-09-13T23:35:45.0018389Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.16/x64
+2026-09-13T23:35:45.0019026Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.16/x64
+2026-09-13T23:35:45.0019423Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.16/x64
+2026-09-13T23:35:45.0019815Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.16/x64/lib
+2026-09-13T23:35:45.0020299Z   PORTAL_USUARIO: ***
+2026-09-13T23:35:45.0020609Z   PORTAL_SENHA: ***
+2026-09-13T23:35:45.0020866Z   SMTP_HOST: ***
+2026-09-13T23:35:45.0021110Z   SMTP_PORT: ***
+2026-09-13T23:35:45.0021360Z   SMTP_USER: ***
+2026-09-13T23:35:45.0021767Z   SMTP_PASS: ***
+2026-09-13T23:35:45.0022407Z   DISCORD_WEBHOOK_URL: ***
+2026-09-13T23:35:45.0022978Z ##[endgroup]
+2026-09-13T23:35:45.0065410Z ##[debug]/usr/bin/bash -e /home/runner/work/_temp/375aaad1-b6a4-462d-bb00-04e0cdfbfca0.sh
+2026-09-13T23:36:32.0077173Z Abrindo o portal...
+2026-09-13T23:36:32.0078629Z Aviso: não encontrei a tela de login (Page.wait_for_selector: Timeout 15000ms exceeded.
+2026-09-13T23:36:32.0079917Z Call log:
+2026-09-13T23:36:32.0088264Z waiting for locator("#txtUsuario, #Usuario, input[name='Usuario']") to be visible
+2026-09-13T23:36:32.0089623Z ). Seguindo (pode já estar logado ou os seletores em config.yaml precisam de ajuste).
+2026-09-13T23:36:32.0091501Z ERRO: não consegui capturar a resposta da API de notas. Possíveis causas: login falhou (confira PORTAL_USUARIO/PORTAL_SENHA e os seletores em config.yaml), ou o portal mudou de endpoint.
+2026-09-13T23:36:32.0578009Z ##[error]Process completed with exit code 1.
+2026-09-13T23:36:32.0591876Z ##[debug]Finishing: Rodar verificação de notas

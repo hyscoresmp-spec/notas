@@ -1,0 +1,5 @@
+﻿2026-09-13T23:36:32.0611231Z ##[debug]Evaluating condition for step: 'Salvar o novo estado das notas no repositório'
+2026-09-13T23:36:32.0614277Z ##[debug]Evaluating: success()
+2026-09-13T23:36:32.0614781Z ##[debug]Evaluating success:
+2026-09-13T23:36:32.0615289Z ##[debug]=> false
+2026-09-13T23:36:32.0615729Z ##[debug]Result: false

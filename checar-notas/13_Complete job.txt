@@ -1,0 +1,14 @@
+﻿2026-09-13T23:36:32.3493815Z ##[debug]Starting: Complete job
+2026-09-13T23:36:32.3496020Z Uploading runner diagnostic logs
+2026-09-13T23:36:32.3508421Z ##[debug]Starting diagnostic file upload.
+2026-09-13T23:36:32.3508824Z ##[debug]Setting up diagnostic log folders.
+2026-09-13T23:36:32.3510887Z ##[debug]Creating diagnostic log files folder.
+2026-09-13T23:36:32.3519566Z ##[debug]Copying 1 worker diagnostic logs.
+2026-09-13T23:36:32.3528319Z ##[debug]Copying 1 runner diagnostic logs.
+2026-09-13T23:36:32.3529496Z ##[debug]Zipping diagnostic files.
+2026-09-13T23:36:32.3601900Z ##[debug]Uploading diagnostic metadata file.
+2026-09-13T23:36:32.3633997Z ##[debug]Diagnostic file upload complete.
+2026-09-13T23:36:32.3634830Z Completed runner diagnostic log upload
+2026-09-13T23:36:32.3635285Z Cleaning up orphan processes
+2026-09-13T23:36:32.3937303Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-13T23:36:32.3939432Z ##[debug]Finishing: Complete job
