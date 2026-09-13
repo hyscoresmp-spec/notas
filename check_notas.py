@@ -108,8 +108,10 @@ def logar_e_capturar_notas(config):
             except Exception as e2:
                 print(f"Não consegui salvar os arquivos de debug: {e2}")
 
-        # Garante que estamos na tela de notas (dispara a chamada da API)
-        page.goto(config["portal"]["url"], wait_until="networkidle")
+        # NÃO navegamos de novo aqui: como o portal é uma SPA (Angular)
+        # que guarda a sessão em memória, um reload completo da página
+        # jogaria de volta pra tela de login. Deixamos a própria SPA
+        # reagir ao login e trocar de tela sozinha.
         page.wait_for_timeout(3000)
 
         # Espera ativa pela captura da API, até o timeout configurado
