@@ -18,9 +18,9 @@ portal:
   # seção "Como descobrir os seletores de login", para o passo a passo
   # de como confirmar/corrigir estes valores usando o DevTools (F12).
   selectors:
-    username_input: "#txtUsuario, #Usuario, input[name='Usuario']"
-    password_input: "#txtSenha, #Senha, input[name='Senha']"
-    submit_button: "#btnEntrar, button[type='submit']"
+    username_input: "#User"
+    password_input: "#Pass"
+    submit_button: "button[ng-click='controller.validarDadosLogin()']"
 
   # Quanto tempo (em milissegundos) esperar após enviar o login
   # antes de considerar que a página carregou.
