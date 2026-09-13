@@ -120,6 +120,16 @@ def logar_e_capturar_notas(config):
             page.wait_for_timeout(intervalo)
             esperado += intervalo
 
+        # Sempre salva um print + HTML do estado final da página.
+        # Se a API de notas não foi capturada, isso ajuda a ver em
+        # qual tela o script "travou" (ex: seleção de turma, menu
+        # intermediário, etc.)
+        try:
+            page.screenshot(path=str(BASE_DIR / "debug_login.png"), full_page=True)
+            (BASE_DIR / "debug_login.html").write_text(page.content(), encoding="utf-8")
+        except Exception as e2:
+            print(f"Não consegui salvar os arquivos de debug: {e2}")
+
         browser.close()
 
     if "payload" not in notas_capturadas:
