@@ -99,6 +99,14 @@ def logar_e_capturar_notas(config):
             print(f"Aviso: não encontrei a tela de login ({e}). "
                   f"Seguindo (pode já estar logado ou os seletores "
                   f"em config.yaml precisam de ajuste).")
+            # Salva evidências pra facilitar o diagnóstico: um print
+            # da tela e o HTML da página no momento da falha.
+            try:
+                page.screenshot(path=str(BASE_DIR / "debug_login.png"), full_page=True)
+                (BASE_DIR / "debug_login.html").write_text(page.content(), encoding="utf-8")
+                print("Salvei debug_login.png e debug_login.html para diagnóstico.")
+            except Exception as e2:
+                print(f"Não consegui salvar os arquivos de debug: {e2}")
 
         # Garante que estamos na tela de notas (dispara a chamada da API)
         page.goto(config["portal"]["url"], wait_until="networkidle")
@@ -119,7 +127,8 @@ def logar_e_capturar_notas(config):
             "ERRO: não consegui capturar a resposta da API de notas. "
             "Possíveis causas: login falhou (confira PORTAL_USUARIO/"
             "PORTAL_SENHA e os seletores em config.yaml), ou o portal "
-            "mudou de endpoint."
+            "mudou de endpoint. Veja debug_login.png / debug_login.html "
+            "nos artefatos desta execução."
         )
         sys.exit(1)
 
@@ -147,6 +156,19 @@ def extrair_notas_relevantes(payload):
     return resultado
 
 
+def formatar_boletim_completo(notas):
+    """Monta um texto legível com todas as disciplinas e notas atuais."""
+    linhas = []
+    for dados in notas.values():
+        disciplina = dados["disciplina"]
+        colunas = dados["colunas"]
+        linhas.append(f"\n{disciplina}")
+        for coluna, valor in colunas.items():
+            if valor not in (None, ""):
+                linhas.append(f"   {coluna}: {valor}")
+    return "\n".join(linhas) if linhas else "(nenhuma nota encontrada)"
+
+
 def comparar_notas(antigo, novo):
     """Retorna lista de strings descrevendo o que mudou."""
     mudancas = []
@@ -170,7 +192,7 @@ def comparar_notas(antigo, novo):
     return mudancas
 
 
-def enviar_email(config, mudancas):
+def enviar_email(config, mudancas, boletim_completo, primeira_execucao):
     host = os.environ.get("SMTP_HOST")
     port = os.environ.get("SMTP_PORT")
     user = os.environ.get("SMTP_USER")
@@ -181,8 +203,21 @@ def enviar_email(config, mudancas):
         return
 
     destinatario = config["notifications"]["email"]["to"]
-    assunto = config["notifications"]["email"]["subject"]
-    corpo = "Notas atualizadas:\n\n" + "\n".join(f"- {m}" for m in mudancas)
+
+    if primeira_execucao:
+        assunto = "📚 Boletim atual (primeira leitura)"
+        corpo = (
+            "Esta é a primeira leitura do sistema — ainda não havia "
+            "nada salvo pra comparar. A partir de agora, qualquer "
+            "mudança será avisada.\n"
+            "\n=== Boletim atual ===" + boletim_completo
+        )
+    else:
+        assunto = config["notifications"]["email"]["subject"]
+        corpo = (
+            "O que mudou:\n\n" + "\n".join(f"- {m}" for m in mudancas)
+            + "\n\n=== Boletim completo atual ===" + boletim_completo
+        )
 
     msg = MIMEText(corpo, "plain", "utf-8")
     msg["Subject"] = assunto
@@ -196,13 +231,20 @@ def enviar_email(config, mudancas):
     print("E-mail enviado.")
 
 
-def enviar_discord(mudancas):
+def enviar_discord(mudancas, boletim_completo, primeira_execucao):
     webhook_url = os.environ.get("DISCORD_WEBHOOK_URL")
     if not webhook_url:
         print("Aviso: DISCORD_WEBHOOK_URL não configurado, pulando Discord.")
         return
 
-    texto = "**📚 Nova nota lançada!**\n" + "\n".join(f"• {m}" for m in mudancas)
+    if primeira_execucao:
+        texto = "**📚 Primeira leitura do boletim**\n```" + boletim_completo + "\n```"
+    else:
+        texto = (
+            "**📚 Nova nota lançada!**\n"
+            + "\n".join(f"• {m}" for m in mudancas)
+            + "\n\n**Boletim completo:**\n```" + boletim_completo + "\n```"
+        )
     # Discord limita mensagens a 2000 caracteres
     texto = texto[:1990]
 
@@ -219,21 +261,25 @@ def main():
     notas_antigas = carregar_estado_anterior()
 
     mudancas = comparar_notas(notas_antigas, notas_novas)
+    boletim_completo = formatar_boletim_completo(notas_novas)
 
     primeira_execucao = notas_antigas is None
-    deve_avisar = mudancas and (
-        not primeira_execucao or config.get("avisar_na_primeira_execucao")
+    deve_avisar = bool(mudancas) or (
+        primeira_execucao and config.get("avisar_na_primeira_execucao")
     )
 
     if deve_avisar:
-        print(f"{len(mudancas)} mudança(s) detectada(s):")
-        for m in mudancas:
-            print(" -", m)
+        if primeira_execucao:
+            print("Primeira execução — enviando boletim completo.")
+        else:
+            print(f"{len(mudancas)} mudança(s) detectada(s):")
+            for m in mudancas:
+                print(" -", m)
 
         if config["notifications"]["email"]["enabled"]:
-            enviar_email(config, mudancas)
+            enviar_email(config, mudancas, boletim_completo, primeira_execucao)
         if config["notifications"]["discord"]["enabled"]:
-            enviar_discord(mudancas)
+            enviar_discord(mudancas, boletim_completo, primeira_execucao)
     else:
         print("Nenhuma mudança relevante para avisar.")
 

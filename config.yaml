@@ -42,6 +42,7 @@ notifications:
     # O aviso será formatado automaticamente; nenhuma configuração
     # extra é necessária aqui além de habilitar/desabilitar.
 
-# Se true, o script também avisa mesmo se não achar nenhuma nota
-# antiga salva (primeira execução) — útil só para testar.
+# Se true, o script também avisa na primeira execução (quando ainda
+# não existe nenhum histórico salvo), mandando o boletim completo
+# como "primeira leitura".
 avisar_na_primeira_execucao: true
