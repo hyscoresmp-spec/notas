@@ -1,5 +1,0 @@
-﻿2026-09-13T23:36:32.0646098Z ##[debug]Evaluating condition for step: 'Post Configurar Python'
-2026-09-13T23:36:32.0647879Z ##[debug]Evaluating: success()
-2026-09-13T23:36:32.0648312Z ##[debug]Evaluating success:
-2026-09-13T23:36:32.0648749Z ##[debug]=> false
-2026-09-13T23:36:32.0649154Z ##[debug]Result: false
