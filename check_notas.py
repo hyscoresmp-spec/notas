@@ -60,6 +60,67 @@ def pegar_credenciais():
     return usuario, senha
 
 
+def selecionar_turma_se_necessario(page, config):
+    """
+    Às vezes o portal mostra uma tela pedindo pra escolher a turma
+    antes de ir para as notas. Esta função detecta se ela apareceu
+    e, se sim, escolhe a opção configurada e confirma. Se a tela não
+    aparecer, simplesmente segue em frente.
+    """
+    cfg_turma = config.get("turma", {})
+    if not cfg_turma.get("selecionar", True):
+        return
+
+    seletor_opcoes = "input[name='itemCursoAluno'], input[name='itemCursoResp']"
+    try:
+        page.wait_for_selector(seletor_opcoes, timeout=6000)
+    except Exception:
+        print("Tela de seleção de turma não apareceu dessa vez (ok).")
+        return
+
+    serie_texto = (cfg_turma.get("serie_contendo") or "").lower()
+    ano_texto = (cfg_turma.get("ano_letivo_contendo") or "").lower()
+
+    opcoes = page.locator(seletor_opcoes)
+    total = opcoes.count()
+    escolhida = None
+
+    for i in range(total):
+        radio = opcoes.nth(i)
+        container = radio.locator(
+            "xpath=ancestor::div[contains(@class,'item-curso')][1]"
+        )
+        texto = container.inner_text().lower() if container.count() > 0 else ""
+
+        if serie_texto and serie_texto not in texto:
+            continue
+        if ano_texto and ano_texto not in texto:
+            continue
+
+        escolhida = radio
+        break
+
+    if escolhida is None:
+        print(
+            f"Aviso: não achei nenhuma turma com "
+            f"serie_contendo='{cfg_turma.get('serie_contendo')}' e "
+            f"ano_letivo_contendo='{cfg_turma.get('ano_letivo_contendo')}'. "
+            f"Usando a primeira opção da lista como alternativa."
+        )
+        escolhida = opcoes.first
+
+    escolhida.check(force=True)
+    page.wait_for_timeout(500)
+
+    try:
+        page.click("#btnConfirmar", timeout=5000)
+        print("Turma selecionada e confirmada.")
+    except Exception as e:
+        print(f"Aviso: não consegui clicar em Confirmar ({e}).")
+
+    page.wait_for_timeout(3000)
+
+
 def logar_e_capturar_notas(config):
     usuario, senha = pegar_credenciais()
     sel = config["portal"]["selectors"]
@@ -113,6 +174,9 @@ def logar_e_capturar_notas(config):
         # jogaria de volta pra tela de login. Deixamos a própria SPA
         # reagir ao login e trocar de tela sozinha.
         page.wait_for_timeout(3000)
+
+        # Pode aparecer (ou não) uma tela pedindo pra escolher a turma
+        selecionar_turma_se_necessario(page, config)
 
         # Espera ativa pela captura da API, até o timeout configurado
         timeout_ms = config["portal"]["wait_for_notas_ms"]

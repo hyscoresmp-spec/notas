@@ -13,7 +13,7 @@ on:
   # nisso, ex: 9h no Brasil = 12h UTC.
   # ===========================================================
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "*/5 * * * *"
 
   # Permite rodar manualmente pela aba "Actions" no GitHub, útil pra testar
   workflow_dispatch:

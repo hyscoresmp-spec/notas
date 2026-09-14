@@ -29,6 +29,22 @@ portal:
   # Tempo máximo de espera (ms) pela resposta da API de notas
   wait_for_notas_ms: 20000
 
+# Às vezes (nem sempre) o portal mostra uma tela pedindo pra escolher
+# a turma/série antes de ir para as notas. Esta seção configura qual
+# opção o script deve escolher automaticamente quando isso acontecer.
+turma:
+  # Se false, o script nunca tenta escolher turma (só ignora essa tela)
+  selecionar: true
+
+  # Texto que precisa aparecer na opção (não precisa ser exato,
+  # nem diferenciar maiúsculas/minúsculas). Deixe em branco ("") se
+  # não quiser filtrar por isso.
+  serie_contendo: "9º ANO"
+
+  # Mesma ideia, pra filtrar também pelo ano letivo. Deixe em branco
+  # se não precisar.
+  ano_letivo_contendo: "2026"
+
 notifications:
   email:
     enabled: true
