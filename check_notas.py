@@ -268,6 +268,19 @@ def comparar_notas(antigo, novo):
     return mudancas
 
 
+def escolher_formato(config, canal):
+    """Lê config.yaml e decide o que incluir no aviso daquele canal
+    (email ou discord): mudanças, boletim completo, ou ambos.
+    Prioridade se mais de um estiver 'true': os_dois > mensagem_longa
+    > mensagem_direta."""
+    fmt = config["notifications"][canal].get("formato_mensagem", {})
+    if fmt.get("os_dois"):
+        return "os_dois"
+    if fmt.get("mensagem_longa"):
+        return "mensagem_longa"
+    return "mensagem_direta"  # padrão, mesmo se nada estiver marcado
+
+
 def enviar_email(config, mudancas, boletim_completo, primeira_execucao):
     host = os.environ.get("SMTP_HOST")
     port = os.environ.get("SMTP_PORT")
@@ -290,10 +303,13 @@ def enviar_email(config, mudancas, boletim_completo, primeira_execucao):
         )
     else:
         assunto = config["notifications"]["email"]["subject"]
-        corpo = (
-            "O que mudou:\n\n" + "\n".join(f"- {m}" for m in mudancas)
-            + "\n\n=== Boletim completo atual ===" + boletim_completo
-        )
+        formato = escolher_formato(config, "email")
+        partes = []
+        if formato in ("mensagem_direta", "os_dois"):
+            partes.append("O que mudou:\n\n" + "\n".join(f"- {m}" for m in mudancas))
+        if formato in ("mensagem_longa", "os_dois"):
+            partes.append("=== Boletim completo atual ===" + boletim_completo)
+        corpo = "\n\n".join(partes)
 
     msg = MIMEText(corpo, "plain", "utf-8")
     msg["Subject"] = assunto
@@ -307,34 +323,75 @@ def enviar_email(config, mudancas, boletim_completo, primeira_execucao):
     print("E-mail enviado.")
 
 
-def enviar_discord(mudancas, boletim_completo, primeira_execucao):
+def enviar_discord(config, mudancas, boletim_completo, primeira_execucao):
     webhook_url = os.environ.get("DISCORD_WEBHOOK_URL")
     if not webhook_url:
         print("Aviso: DISCORD_WEBHOOK_URL não configurado, pulando Discord.")
         return
 
-    if primeira_execucao:
-        texto = "<@1400937459168317492> **📚 Primeira leitura do boletim**\n```" + boletim_completo + "\n```"
-    else:
-        texto = (
-            "<@1400937459168317492> **📚 Nova nota lançada!**\n"
-            + "\n".join(f"• {m}" for m in mudancas)
-            + "\n\n**Boletim completo:**\n```" + boletim_completo + "\n```"
-        )
-    # Discord limita mensagens a 2000 caracteres
-    texto = texto[:1990]
+    mencao = "<@1400937459168317492>"
+    LIMITE = 1900  # margem de segurança para as crases do bloco de código
 
-    resp = requests.post(
-        webhook_url,
-        json={
-            "content": texto,
-            # Garante que a menção realmente notifique o usuário
-            "allowed_mentions": {"parse": ["users"]},
-        },
-        timeout=15,
-    )
-    resp.raise_for_status()
-    print("Mensagem enviada ao Discord.")
+    if primeira_execucao:
+        cabecalho = f"{mencao} **📚 Primeira leitura do boletim**"
+        blocos = _quebrar_em_blocos(boletim_completo, LIMITE)
+    else:
+        formato = escolher_formato(config, "discord")
+        cabecalho = f"{mencao} **📚 Nova nota lançada!**"
+        blocos = []
+
+        if formato in ("mensagem_direta", "os_dois"):
+            cabecalho += "\n" + "\n".join(f"• {m}" for m in mudancas)
+
+        if formato in ("mensagem_longa", "os_dois"):
+            cabecalho += "\n\n**Boletim completo:**"
+            blocos = _quebrar_em_blocos(boletim_completo, LIMITE)
+
+    mensagens = []
+    if blocos:
+        mensagens.append(cabecalho + "\n```" + blocos[0] + "\n```")
+        for bloco in blocos[1:]:
+            mensagens.append("```" + bloco + "\n```")
+    else:
+        mensagens.append(cabecalho)
+
+    for msg in mensagens:
+        resp = requests.post(
+            webhook_url,
+            json={
+                "content": msg[:2000],
+                "allowed_mentions": {"parse": ["users"]},
+            },
+            timeout=15,
+        )
+        resp.raise_for_status()
+
+    print(f"Mensagem enviada ao Discord ({len(mensagens)} parte(s)).")
+
+
+def _quebrar_em_blocos(texto, limite):
+    """Quebra um texto longo em pedaços de até `limite` caracteres,
+    sempre cortando em quebras de linha (nunca no meio de uma linha)."""
+    if not texto:
+        return []
+
+    linhas = texto.split("\n")
+    blocos = []
+    atual = ""
+
+    for linha in linhas:
+        candidato = (atual + "\n" + linha) if atual else linha
+        if len(candidato) > limite:
+            if atual:
+                blocos.append(atual)
+            atual = linha
+        else:
+            atual = candidato
+
+    if atual:
+        blocos.append(atual)
+
+    return blocos
 
 
 def main():
@@ -367,7 +424,7 @@ def main():
                 print(f"ERRO ao enviar e-mail: {e}")
         if config["notifications"]["discord"]["enabled"]:
             try:
-                enviar_discord(mudancas, boletim_completo, primeira_execucao)
+                enviar_discord(config, mudancas, boletim_completo, primeira_execucao)
             except Exception as e:
                 print(f"ERRO ao enviar mensagem no Discord: {e}")
     else:

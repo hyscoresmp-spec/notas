@@ -52,11 +52,22 @@ notifications:
     to: "naybofc@gmail.com"
     # Assunto do e-mail
     subject: "📚 Nova nota lançada no portal!"
+    # Formato do aviso por e-mail quando uma nota muda (não afeta a
+    # primeira execução, que sempre manda o boletim completo).
+    # Deixe só UMA das três opções abaixo como "true".
+    formato_mensagem:
+      mensagem_direta: true   # manda só a(s) nota(s) que mudou(aram)
+      mensagem_longa: false   # manda só o boletim completo
+      os_dois: false          # manda as duas coisas juntas
 
   discord:
     enabled: true
-    # O aviso será formatado automaticamente; nenhuma configuração
-    # extra é necessária aqui além de habilitar/desabilitar.
+    # Mesma ideia do e-mail, mas só pro Discord — pode deixar
+    # diferente do e-mail se quiser.
+    formato_mensagem:
+      mensagem_direta: true
+      mensagem_longa: false
+      os_dois: false
 
 # Se true, o script também avisa na primeira execução (quando ainda
 # não existe nenhum histórico salvo), mandando o boletim completo
