@@ -314,17 +314,25 @@ def enviar_discord(mudancas, boletim_completo, primeira_execucao):
         return
 
     if primeira_execucao:
-        texto = "**📚 Primeira leitura do boletim**\n```" + boletim_completo + "\n```"
+        texto = "<@1400937459168317492> **📚 Primeira leitura do boletim**\n```" + boletim_completo + "\n```"
     else:
         texto = (
-            "**📚 Nova nota lançada!**\n"
+            "<@1400937459168317492> **📚 Nova nota lançada!**\n"
             + "\n".join(f"• {m}" for m in mudancas)
             + "\n\n**Boletim completo:**\n```" + boletim_completo + "\n```"
         )
     # Discord limita mensagens a 2000 caracteres
     texto = texto[:1990]
 
-    resp = requests.post(webhook_url, json={"content": texto}, timeout=15)
+    resp = requests.post(
+        webhook_url,
+        json={
+            "content": texto,
+            # Garante que a menção realmente notifique o usuário
+            "allowed_mentions": {"parse": ["users"]},
+        },
+        timeout=15,
+    )
     resp.raise_for_status()
     print("Mensagem enviada ao Discord.")
 
@@ -353,9 +361,15 @@ def main():
                 print(" -", m)
 
         if config["notifications"]["email"]["enabled"]:
-            enviar_email(config, mudancas, boletim_completo, primeira_execucao)
+            try:
+                enviar_email(config, mudancas, boletim_completo, primeira_execucao)
+            except Exception as e:
+                print(f"ERRO ao enviar e-mail: {e}")
         if config["notifications"]["discord"]["enabled"]:
-            enviar_discord(mudancas, boletim_completo, primeira_execucao)
+            try:
+                enviar_discord(mudancas, boletim_completo, primeira_execucao)
+            except Exception as e:
+                print(f"ERRO ao enviar mensagem no Discord: {e}")
     else:
         print("Nenhuma mudança relevante para avisar.")
 
